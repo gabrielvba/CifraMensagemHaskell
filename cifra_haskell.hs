@@ -1,5 +1,29 @@
-main = do string <- getLine
-          putStrLn(cifra2a2 (colocaFlag(colocaX (tiraEspacos string))))
+main = do putStrLn("Menu:" ++ "\n")
+          putStrLn("1 - Cifra Mensagem.")
+          putStrLn("2 - Mostra alfabeto.")
+          putStrLn("3 - Decifrar Mensagem.")
+          putStrLn("4 - Terminar" ++ "\n")
+          
+          number <- readLn
+          menu number
+
+menu :: Int -> IO()
+menu 1 = do putStrLn("\n" ++ "Digite a mensagem a ser cifrada:" ++ "\n")
+            string <- getLine
+            putStrLn("\n" ++ cifra2a2 (colocaFlag(colocaX (tiraEspacos string))) ++ "\n")
+            main
+            
+menu 2 = do putStrLn("\n" ++ "Alfabeto usado" ++ "\n")
+            mostraAlfabeto
+            main
+            
+menu 3 = do putStrLn("\n" ++ "Digite a mensagem a ser decifrada:" ++ "\n")
+            string <- getLine
+            putStrLn("\n" ++ decifra2a2 string ++ "\n")
+            main
+            
+menu 4 = do putStrLn("\n" ++ "Programa finalizado.")
+    
 
 
 tiraEspacos :: String -> String
@@ -129,3 +153,72 @@ pegaElementoAux indice linha coluna [] = ""
 pegaElementoAux indice linha coluna (s:sc) =
     if (indice == coluna) then [s]
     else pegaElementoAux (indice+1) linha coluna sc
+
+
+condicaoDecifraLinha :: Char -> Char -> [[Char]] -> String
+condicaoDecifraLinha a b (s:sc) = do
+    let linhaA = acharLinha a 0 (s:sc)
+    let linhaB = acharLinha b 0 (s:sc)
+    let colunaA = acharColuna a 0 (s:sc)
+    let colunaB = acharColuna b 0 (s:sc)
+    if(colunaA == 0) then 
+        if(colunaB == 0) then (pegaElemento 0 linhaA 4 (s:sc)) ++ (pegaElemento 0 linhaB 4 (s:sc))
+        else (pegaElemento 0 linhaA 4 (s:sc)) ++ (pegaElemento 0 linhaB (colunaB-1) (s:sc))
+    else 
+         if(colunaB == 0) then (pegaElemento 0 linhaA (colunaA-1) (s:sc)) ++ (pegaElemento 0 linhaB 4 (s:sc))
+         else (pegaElemento 0 linhaA (colunaA-1) (s:sc)) ++ (pegaElemento 0 linhaB (colunaB-1) (s:sc))
+
+
+
+
+condicaoDecifraColuna :: Char -> Char -> [[Char]] -> String
+condicaoDecifraColuna a b (s:sc) = do
+    let linhaA = acharLinha a 0 (s:sc)
+    let linhaB = acharLinha b 0 (s:sc)
+    let colunaA = acharColuna a 0 (s:sc)
+    let colunaB = acharColuna b 0 (s:sc)
+    if(linhaA == 0) then 
+        if(linhaB == 0) then (pegaElemento 0 4 colunaA (s:sc)) ++ (pegaElemento 0 4 colunaB (s:sc))
+        else (pegaElemento 0 4 colunaA (s:sc)) ++ (pegaElemento 0 (linhaB-1) colunaB (s:sc))
+    else 
+         if(linhaB == 0) then (pegaElemento 0 (linhaA-1) colunaA (s:sc)) ++ (pegaElemento 0 4 colunaB (s:sc))
+         else (pegaElemento 0 (linhaA-1) colunaA (s:sc)) ++ (pegaElemento 0 (linhaB-1) colunaB (s:sc))
+         
+condicaoDecifraRetangulo :: Char -> Char -> [[Char]] -> String
+condicaoDecifraRetangulo a b (s:sc) = do
+    let linhaA = acharLinha a 0 (s:sc)
+    let linhaB = acharLinha b 0 (s:sc)
+    let colunaA = acharColuna a 0 (s:sc)
+    let colunaB = acharColuna b 0 (s:sc)
+    (pegaElemento 0 linhaB colunaA (s:sc)) ++ (pegaElemento 0 linhaA colunaB (s:sc))
+      
+
+condicaoDecifragem :: Char -> Char -> [[Char]] -> String
+condicaoDecifragem a b matriz = 
+    if acharLinha a 0 matriz == acharLinha b 0 matriz then condicaoDecifraLinha a b matriz
+    else if acharColuna a 0 matriz == acharColuna b 0 matriz then condicaoDecifraColuna a b matriz
+    else condicaoDecifraRetangulo a b matriz
+
+
+decifra2a2 :: String -> String
+decifra2a2 [] = []
+decifra2a2(s:sc) = do
+      let matriz = [['a','b','c','d','e'], ['f','g','h','i','j'], ['k','l','m','n','o'], ['p','q','r','s','t'], ['u','v','w','x','z']]
+      (condicaoDecifragem s (head sc) matriz) ++ decifra2a2 (tail sc)
+      
+      
+mostraAlfabeto :: IO()
+mostraAlfabeto = do
+                   let matriz = [['a','b','c','d','e'], ['f','g','h','i','j'], ['k','l','m','n','o'], ['p','q','r','s','t'], ['u','v','w','x','z']]
+                   imprimeLinha matriz
+
+
+
+imprimeLinha :: [[Char]] -> IO()
+imprimeLinha [] = putStrLn("\n")
+imprimeLinha (s:sc) = do putStrLn(s)
+                         imprimeLinha sc
+
+
+
+
