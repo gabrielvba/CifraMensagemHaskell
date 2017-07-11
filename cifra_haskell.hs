@@ -2,7 +2,7 @@ main = do putStrLn("Menu:" ++ "\n")
           putStrLn("1 - Cifra Mensagem.")
           putStrLn("2 - Mostra alfabeto.")
           putStrLn("3 - Decifrar Mensagem.")
-          putStrLn("4 - Terminar" ++ "\n")
+          putStrLn("4 - Terminar." ++ "\n")
           
           number <- readLn
           menu number
@@ -10,27 +10,28 @@ main = do putStrLn("Menu:" ++ "\n")
 menu :: Int -> IO()
 menu 1 = do putStrLn("\n" ++ "Digite a mensagem a ser cifrada:" ++ "\n")
             string <- getLine
-            putStrLn("\n" ++ cifra2a2 (colocaFlag(colocaX (tiraEspacos string))) ++ "\n")
+            putStrLn("\n" ++ cifra2a2 (colocaFlag(colocaX (retiraEspacos string))) ++ "\n")
             main
             
-menu 2 = do putStrLn("\n" ++ "Alfabeto usado" ++ "\n")
+menu 2 = do putStrLn("\n" ++ "Alfabeto usado:" ++ "\n")
             mostraAlfabeto
             main
             
 menu 3 = do putStrLn("\n" ++ "Digite a mensagem a ser decifrada:" ++ "\n")
             string <- getLine
-            putStrLn("\n" ++ decifra2a2 string ++ "\n")
+            putStrLn("\n" ++  retirarFalsoX(encontraFalsoX(retiraFlag(colocaEspaco(decifra2a2 string)))) ++ "\n")
             main
             
 menu 4 = do putStrLn("\n" ++ "Programa finalizado.")
+
     
 
 
-tiraEspacos :: String -> String
-tiraEspacos [] = ""
-tiraEspacos(s:cs) = 
-    if s == ' ' then "w" ++ tiraEspacos(cs)
-    else s : tiraEspacos(cs)
+retiraEspacos :: String -> String
+retiraEspacos [] = ""
+retiraEspacos(s:cs) = 
+    if s == ' ' then "w" ++ retiraEspacos(cs)
+    else s : retiraEspacos(cs)
 
 
 
@@ -220,5 +221,32 @@ imprimeLinha (s:sc) = do putStrLn(s)
                          imprimeLinha sc
 
 
+colocaEspaco :: String -> String
+colocaEspaco [] = ""
+colocaEspaco(s:cs) = 
+    if s == 'w' then " " ++ colocaEspaco(cs)
+    else s : colocaEspaco(cs)
+    
+    
+retiraFlag :: String -> String
+retiraFlag [] = ""
+retiraFlag(s:cs) = 
+    if s == 'k' then retiraFlag(cs)
+    else s : retiraFlag(cs)
+
+
+encontraFalsoX :: String -> String
+encontraFalsoX (s:sc) = 
+    if sc == [] then [s]
+    else if length sc == 1 then [s] ++ sc
+    else 
+        if s == (head (tail sc)) && (head sc) == 'x' then s : "y" ++ encontraFalsoX(tail sc)
+        else s : encontraFalsoX(sc)
+
+retirarFalsoX :: String -> String
+retirarFalsoX [] = ""
+retirarFalsoX(s:cs) = 
+    if s == 'y' then retirarFalsoX(cs)
+    else s : retirarFalsoX(cs)
 
 
